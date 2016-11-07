@@ -14,11 +14,13 @@
  ```{r, engine='bash'}
    $ source env/bin/activate
  ```
+
  *Step 2:* 
  * install all dependencies
  ```{r, engine='bash'}
  $ pip install -r requirements.txt
  ```
+
 *Step 3:*
  *start virtual environment
  ```{r, engine='bash'} 
@@ -33,11 +35,13 @@
    CREATE DATABASE
    # \q
  ```
+
 *Step 5:*
   * run database_url variable
  ```{r, engine='bash'} 
    $ export DATABASE_URL="postgresql://localhost/wordcount_dev"
  ```
+
 *Step 6:* 
   * create migrations folder
   ```{r, engine='bash'} 

@@ -21,7 +21,7 @@
  ```
 
 
- 3. start virtual environment
+3. start virtual environment
  ```{r, engine='bash'} 
    $ echo "source `which activate.sh`" >> ~/.bashrc
    $ source ~/.bashrc
@@ -41,7 +41,7 @@
    $ export DATABASE_URL="postgresql://localhost/wordcount_dev"
  ```
  
-  6. create migrations folder
+6. create migrations folder
   ```{r, engine='bash'} 
   $ python manage.py db init
   ```
@@ -54,7 +54,7 @@
   $ python manage.py db upgrade
   ```
 
-  7. seed database
+7. seed database
   ```{r, engine='bash'} 
   $ python seeds.py
   ```

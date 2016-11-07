@@ -10,12 +10,12 @@
 #Environment configuration: 
 
 
- 1. activate your environment
+1. activate your environment
  ```{r, engine='bash'}
    $ source env/bin/activate
  ```
 
- 2. install all dependencies
+2. install all dependencies
  ```{r, engine='bash'}
  $ pip install -r requirements.txt
  ```
@@ -27,7 +27,7 @@
    $ source ~/.bashrc
  ```
 
- 4. create database
+4. create database
  ```{r, engine='bash'} 
    $psql
    # create database textorical;
@@ -36,7 +36,7 @@
  ```
 
 
-  5. run database_url variable
+5. run database_url variable
  ```{r, engine='bash'} 
    $ export DATABASE_URL="postgresql://localhost/wordcount_dev"
  ```

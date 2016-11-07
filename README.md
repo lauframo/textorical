@@ -9,26 +9,25 @@
 
 #Environment configuration: 
 
-*Step 1:*
- * activate your environment
+
+ 1. activate your environment
  ```{r, engine='bash'}
    $ source env/bin/activate
  ```
 
- *Step 2:* 
- * install all dependencies
+ 2. install all dependencies
  ```{r, engine='bash'}
  $ pip install -r requirements.txt
  ```
 
-*Step 3:*
- *start virtual environment
+
+ 3. start virtual environment
  ```{r, engine='bash'} 
    $ echo "source `which activate.sh`" >> ~/.bashrc
    $ source ~/.bashrc
  ```
-*Step 4:* 
- * create database
+
+ 4. create database
  ```{r, engine='bash'} 
    $psql
    # create database textorical;
@@ -36,14 +35,13 @@
    # \q
  ```
 
-*Step 5:*
-  * run database_url variable
+
+  5. run database_url variable
  ```{r, engine='bash'} 
    $ export DATABASE_URL="postgresql://localhost/wordcount_dev"
  ```
-
-*Step 6:* 
-  * create migrations folder
+ 
+  6. create migrations folder
   ```{r, engine='bash'} 
   $ python manage.py db init
   ```
@@ -55,8 +53,8 @@
   ```{r, engine='bash'} 
   $ python manage.py db upgrade
   ```
-Step 7:
-  *seed database
+
+  7. seed database
   ```{r, engine='bash'} 
   $ python seeds.py
   ```

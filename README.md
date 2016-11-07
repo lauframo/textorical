@@ -7,7 +7,7 @@
   * gutenberg==0.4.2
   * alembic==0.8.8
 
-#Environment configuration: 
+## Environment configuration: 
 
 
 1. activate your environment

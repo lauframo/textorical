@@ -5,6 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 from pandas import DataFrame
 
+
 def get_training_set(year):
   return Text.query.filter_by(period_start_year = year).filter_by(data_set = "train").limit(20).all()
 
@@ -64,9 +65,10 @@ test_data_features = vectorizer.transform(test_text_collection)
 test_data_features = test_data_features.toarray()
 
 result = forest.predict(test_data_features)
-print("This is a result")
-print(result)
 
 output = DataFrame(data={"id":test["id"], "gutenberg_id":test["gutenberg_id"], "author_birth_year":test["author_birth_year"], "period_start_year":result, "accurate":(test["period_start_year"]==result) })
+
+accuracy = forest.score(test_data_features, test["period_start_year"], sample_weight=None)
+print "Accuracy: ", accuracy
 
 output.to_csv("Bag_of_Words_modelv02.csv", index=False, quoting=3 )

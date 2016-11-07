@@ -27,8 +27,9 @@ testing_object_collection = []
 testing_text_collection = []
 
 for text in testing_collection:
-  testing_object_collection.append([text.id, text.period_start_year, text.text_content])
+  testing_object_collection.append([text.id, text.period_start_year, text.text_content, text.gutenberg_id, text.author_birth_year])
   testing_text_collection.append(text.text_content)
+
 
 df = DataFrame(object_collection)
 df.columns = ['id', 'period_start_year', 'text_content']
@@ -44,11 +45,7 @@ train_data_features = vectorizer.fit_transform(text_collection)
 train_data_features = train_data_features.toarray()
 
 vocab = vectorizer.get_feature_names()
-# print(vocab)
 
-# tf_transformer = TfidfTransformer(use_idf=False).fit(train_data_features)
-# train_tf = tf_transformer.transform(train_data_features)
-# print(train_tf)
 
 tfidf_transformer = TfidfTransformer()
 train_tfidf = tfidf_transformer.fit_transform(train_data_features)
@@ -62,10 +59,8 @@ testing_targets = []
 for text in testing_object_collection:
   testing_targets.append(text[1])
 
-clf = MultinomialNB().fit(train_tfidf, training_targets)
 
-# testing_text = Text.query.filter_by(data_set='test').filter_by(period_start_year=1800).first()
-# testing_text = testing_text.text_content
+clf = MultinomialNB().fit(train_tfidf, training_targets)
 
 testing_data_features = vectorizer.transform(testing_text_collection)
 new_tfidf = tfidf_transformer.transform(testing_data_features)
@@ -73,3 +68,4 @@ new_tfidf = tfidf_transformer.transform(testing_data_features)
 predicted = clf.predict(new_tfidf)
 mean = np.mean(predicted == testing_targets)
 print(mean)
+print(type(predicted))

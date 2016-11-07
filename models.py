@@ -2,19 +2,6 @@ from app import db
 
 import settings
 
-# DeclarativeBase = declarative_base()
-
-
-# def db_connect():
-#     #   """
-#     # Performs database connection using database settings from settings.py.
-#     # Returns sqlalchemy engine instance
-#     # """
-#     return create_engine(URL(**settings.DATABASE))
-
-# def create_texts_table(engine):
-#   DeclarativeBase.metadata.create_all(engine)
-
 
 class Text(db.Model):
     __tablename__ = "texts"

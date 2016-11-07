@@ -57,8 +57,8 @@ def initialize_book(book, counter):
     if (book_content != None):
       meta = md[book]
       new_text = Text(meta['title'], meta['author'], meta['authoryearofbirth'], roundown_year(meta['authoryearofbirth']), book_content, book, 0, data_set_selector(counter))
-      if (db.session.add(new_text)):
-        db.session.commit()
+      db.session.add(new_text)
+      db.session.commit()
 
 
 

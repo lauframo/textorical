@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
 import datetime
 import gc
+import cPickle
 
 
 start_of_program = datetime.datetime.now()
@@ -19,15 +20,15 @@ print "Start of program:", start_of_program
 # def get_testing_set(year):
 #   return Text.query.filter_by(period_start_year = year).filter_by(data_set = "test").all()
 print "Grabbing data..."
-training_collection = Text.query.filter_by(data_set = "train").all()
-testing_collection = Text.query.filter_by(data_set = "test").all()
+training_collection = Text.query.filter_by(data_set = "train").limit(100).all()
+testing_collection = Text.query.filter_by(data_set = "test").limit(100).all()
 
 object_collection = []
 text_collection = []
 
 for text in training_collection:
   gc.disable()
-  object_collection.append([text.id, text.period_start_year, text.text_content])
+  object_collection.append([text.id, text.period_start_year])
   text_collection.append(text.text_content)
   gc.enable()
 
@@ -36,7 +37,7 @@ testing_text_collection = []
 
 for text in testing_collection:
   gc.disable()
-  testing_object_collection.append([text.id, text.period_start_year, text.text_content, text.gutenberg_id, text.author_birth_year])
+  testing_object_collection.append([text.id, text.period_start_year, text.gutenberg_id, text.author_birth_year])
   testing_text_collection.append(text.text_content)
   gc.enable()
 

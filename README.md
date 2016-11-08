@@ -7,7 +7,7 @@
   * gutenberg==0.4.2
   * alembic==0.8.8
 
-## Environment configuration: 
+## Environment configuration:
 
 
 1. activate your environment
@@ -22,39 +22,43 @@
 
 
 3. start virtual environment
- ```{r, engine='bash'} 
+ ```{r, engine='bash'}
    $ echo "source `which activate.sh`" >> ~/.bashrc
    $ source ~/.bashrc
  ```
 
 4. create database
- ```{r, engine='bash'} 
+ ```{r, engine='bash'}
    $psql
    # create database textorical;
    CREATE DATABASE
    # \q
  ```
 
+5. run app_settings variable
+```
+$ export APP_SETTINGS="config.DevelopmentConfig"
+```
 
-5. run database_url variable
- ```{r, engine='bash'} 
+6. run database_url variable
+ ```{r, engine='bash'}
    $ export DATABASE_URL="postgresql://localhost/wordcount_dev"
  ```
- 
-6. create migrations folder
-  ```{r, engine='bash'} 
+
+7. create migrations folder
+  ```{r, engine='bash'}
   $ python manage.py db init
   ```
   * create first migration
-  ```{r, engine='bash'}  
+  ```{r, engine='bash'}
   $ python manage.py db migrate
   ```
   * run the migration
-  ```{r, engine='bash'} 
+  ```{r, engine='bash'}
   $ python manage.py db upgrade
   ```
 
-7. seed database
-  ```{r, engine='bash'} 
+8. seed database
+  ```{r, engine='bash'}
   $ python seeds.py
   ```

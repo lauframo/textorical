@@ -46,7 +46,7 @@ vectorizer = CountVectorizer(analyzer = "word",   \
 
 print("Vectorizing training data...")
 train_data_features = vectorizer.fit_transform(train_text_collection)
-train_data_features = train_dat_features.toarray()
+train_data_features = train_data_features.toarray()
 
 vocab = vectorizer.get_feature_names()
 
@@ -77,7 +77,7 @@ validation_text_collection = []
 
 gc.disable()
 for text in validation_collection:
-  validation_object_collection.append([text[0], text[1], text[2], text[3], text[4])
+  validation_object_collection.append([text[0], text[1], text[2], text[3], text[4]])
   validation_text_collection.append(text[4])
 gc.enable()
 
@@ -90,7 +90,10 @@ print("Vectorizing validation data...")
 validation_data_features = vectorizer.transform(validation_text_collection)
 validation_data_features = validation_data_features.toarray()
 
-result = forest.predict(validation_data_features)
+new_tfidf = tfidf_transformer.transform(validation_data_features)
+
+
+result = forest.predict(new_tfidf)
 
 output = DataFrame(data={"id":validation["id"], "gutenberg_id":validation["gutenberg_id"], "author_birth_year":validation["author_birth_year"], "period_start_year":result, "accurate":(validation["period_start_year"]==result) })
 
@@ -100,10 +103,10 @@ print "Accuracy: ", accuracy
 output.to_csv("RandomForest_Bag_of_Words_modelv05.csv", index=False, quoting=3 )
 
 end_of_program = datetime.datetime.now()
-print "End of program:", end_of_program
+# print "End of program:", end_of_program
 
-part_time = end_of_program - middle_of_program
-print "Append Runtime:", part_time
+# part_time = end_of_program - middle_of_program
+# print "Append Runtime:", part_time
 
 total_time = end_of_program - start_of_program
 print "Runtime:", total_time

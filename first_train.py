@@ -2,24 +2,41 @@ from app import db
 from app import Text
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import TfidfTransformer
 import numpy as np
 from pandas import DataFrame
+import random
+import datetime
+import gc
+
+start_of_program = datetime.datetime.now()
+print "Start of program:", start_of_program
+
+# def get_training_set(year):
+#   return db.engine.execute("SELECT * FROM texts where data_set = 'train' limit 200" )
 
 
-def get_training_set(year):
-  return Text.query.filter_by(period_start_year = year).filter_by(data_set = "train").limit(20).all()
+training_collection = db.engine.execute("SELECT id, period_start_year, text_content FROM texts where data_set = 'train'" )
+# training_collection = Text.query.filter_by(data_set = "train").limit(2000).all()
 
-training_collection = get_training_set(1500) + get_training_set(1600) + get_training_set(1700) + get_training_set(1800) +get_training_set(1900)
+# training_collection = get_training_set(1500) + get_training_set(1600) + get_training_set(1700) + get_training_set(1800) +get_training_set(1900)
+
 
 train_object_collection = []
 train_text_collection = []
 
+gc.disable()
 for text in training_collection:
-  train_object_collection.append([text.id, text.period_start_year, text.text_content])
-  train_text_collection.append(text.text_content)
+  train_object_collection.append([text[0], text[1], text[2]])
+  train_text_collection.append(text[2])
+gc.enable()
+
 
 train = DataFrame(train_object_collection)
 train.columns = ['id', 'period_start_year', 'text_content']
+
+# middle_of_program = datetime.datetime.now()
+# print "Before appending:", middle_of_program
 
 vectorizer = CountVectorizer(analyzer = "word",   \
                              tokenizer = None,    \
@@ -29,46 +46,65 @@ vectorizer = CountVectorizer(analyzer = "word",   \
 
 print("Vectorizing training data...")
 train_data_features = vectorizer.fit_transform(train_text_collection)
-train_data_features = train_data_features.toarray()
+train_data_features = train_dat_features.toarray()
 
 vocab = vectorizer.get_feature_names()
 
+tfidf_transformer = TfidfTransformer()
+train_tfidf = tfidf_transformer.fit_transform(train_data_features)
+
 print("Training the random forest...")
 forest = RandomForestClassifier(n_estimators = 100)
-forest = forest.fit( train_data_features, train["period_start_year"])
+forest = forest.fit(train_tfidf, train["period_start_year"])
 
-print forest.n_features_
-print forest.classes_
-print forest.feature_importances_
+# print forest.n_features_
+# print forest.classes_
+# print forest.feature_importances_
 
-############################################
-#Test
-############################################
+# ############################################
+# #Test
+# ############################################
 
-def get_validation_set(year):
- return Text.query.filter_by(period_start_year = year).filter_by(data_set = "validation").limit(20).all()
+# def get_validation_set(year):
+#  return Text.query.filter_by(period_start_year = year).filter_by(data_set = "validation").limit(20).all()
 
-validation_collection = get_validation_set(1500) + get_validation_set(1600) + get_validation_set(1700) + get_validation_set(1800) +get_validation_set(1900)
+validation_collection = db.engine.execute("SELECT id, gutenberg_id, author_birth_year, period_start_year, text_content FROM texts where data_set = 'validation'" )
 
-test_object_collection = []
-test_text_collection = []
+# print "Validation Collection:", validation_collection
 
+validation_object_collection = []
+validation_text_collection = []
+
+gc.disable()
 for text in validation_collection:
-  test_object_collection.append([text.id, text.gutenberg_id, text.title, text.author_birth_year, text.period_start_year, text.text_content])
-  test_text_collection.append(text.text_content)
+  validation_object_collection.append([text[0], text[1], text[2], text[3], text[4])
+  validation_text_collection.append(text[4])
+gc.enable()
 
-test = DataFrame(test_object_collection)
-test.columns = ['id', 'gutenberg_id', 'title', 'author_birth_year', 'period_start_year', 'text_content']
+# random.shuffle(test_object_collection)
 
-print("Vectorizing test data...")
-test_data_features = vectorizer.transform(test_text_collection)
-test_data_features = test_data_features.toarray()
+validation = DataFrame(validation_object_collection)
+validation.columns = ['id', 'gutenberg_id', 'author_birth_year', 'period_start_year', 'text_content']
 
-result = forest.predict(test_data_features)
+print("Vectorizing validation data...")
+validation_data_features = vectorizer.transform(validation_text_collection)
+validation_data_features = validation_data_features.toarray()
 
-output = DataFrame(data={"id":test["id"], "gutenberg_id":test["gutenberg_id"], "author_birth_year":test["author_birth_year"], "period_start_year":result, "accurate":(test["period_start_year"]==result) })
+result = forest.predict(validation_data_features)
 
-accuracy = forest.score(test_data_features, test["period_start_year"], sample_weight=None)
+output = DataFrame(data={"id":validation["id"], "gutenberg_id":validation["gutenberg_id"], "author_birth_year":validation["author_birth_year"], "period_start_year":result, "accurate":(validation["period_start_year"]==result) })
+
+accuracy = forest.score(validation_data_features, validation["period_start_year"], sample_weight=None)
 print "Accuracy: ", accuracy
 
-output.to_csv("Bag_of_Words_modelv02.csv", index=False, quoting=3 )
+output.to_csv("RandomForest_Bag_of_Words_modelv05.csv", index=False, quoting=3 )
+
+end_of_program = datetime.datetime.now()
+print "End of program:", end_of_program
+
+part_time = end_of_program - middle_of_program
+print "Append Runtime:", part_time
+
+total_time = end_of_program - start_of_program
+print "Runtime:", total_time
+

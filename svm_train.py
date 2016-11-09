@@ -5,9 +5,11 @@ from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 from pandas import DataFrame
 from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import SGDClassifier
+from sklearn import metrics
 import datetime
 import gc
+import cPickle as pickle
 
 
 start_of_program = datetime.datetime.now()
@@ -19,51 +21,97 @@ print "Start of program:", start_of_program
 # def get_testing_set(year):
 #   return Text.query.filter_by(period_start_year = year).filter_by(data_set = "test").all()
 print "Grabbing data..."
-training_collection = Text.query.filter_by(data_set = "train").all()
-testing_collection = Text.query.filter_by(data_set = "test").all()
+# training_collection = Text.query.filter_by(data_set = "train").all()
+# testing_collection = Text.query.filter_by(data_set = "test").all()
 
-object_collection = []
-text_collection = []
+# training_object_collection = []
+# training_text_collection = []
 
-for text in training_collection:
-  gc.disable()
-  object_collection.append([text.id, text.period_start_year, text.text_content])
-  text_collection.append(text.text_content)
-  gc.enable()
+# for text in training_collection:
+#   gc.disable()
+#   training_object_collection.append([text.id, text.period_start_year])
+#   training_text_collection.append(text.text_content)
+#   gc.enable()
 
-testing_object_collection = []
-testing_text_collection = []
+# save_training_object_collection = open("training_object_collection.pickle", "wb")
+# pickle.dump(training_object_collection, save_training_object_collection)
+# save_training_object_collection.close()
 
-for text in testing_collection:
-  gc.disable()
-  testing_object_collection.append([text.id, text.period_start_year, text.text_content, text.gutenberg_id, text.author_birth_year])
-  testing_text_collection.append(text.text_content)
-  gc.enable()
+# save_training_text_collection = open("training_text_collection.pickle", "wb")
+# pickle.dump(training_text_collection, save_training_text_collection)
+# save_training_text_collection.close()
 
+training_object_collection_f = open("training_object_collection.pickle", "rb")
+training_object_collection = pickle.load(training_object_collection_f)
+training_object_collection_f.close()
 
-# df = DataFrame(object_collection)
-# df.columns = ['id', 'period_start_year', 'text_content']
+training_text_collection_f = open("training_text_collection.pickle", "rb")
+training_text_collection = pickle.load(training_text_collection_f)
+training_text_collection_f.close()
+
+# testing_object_collection = []
+# testing_text_collection = []
+
+# for text in testing_collection:
+#   gc.disable()
+#   testing_object_collection.append([text.id, text.period_start_year, text.gutenberg_id, text.author_birth_year])
+#   testing_text_collection.append(text.text_content)
+#   gc.enable()
+
+# save_testing_object_collection = open("testing_object_collection.pickle", "wb")
+# pickle.dump(testing_object_collection, save_testing_object_collection)
+# save_testing_object_collection.close()
+
+# save_testing_text_collection = open("testing_text_collection.pickle", "wb")
+# pickle.dump(testing_text_collection, save_testing_text_collection)
+# save_testing_text_collection.close()
+
+testing_object_collection_f = open("testing_object_collection.pickle", "rb")
+testing_object_collection = pickle.load(testing_object_collection_f)
+testing_object_collection_f.close()
+
+testing_text_collection_f = open("testing_text_collection.pickle", "rb")
+testing_text_collection = pickle.load(testing_text_collection_f)
+testing_text_collection_f.close()
 
 vectorizer = CountVectorizer(analyzer = "word",   \
                              tokenizer = None,    \
                              preprocessor = None, \
-                             stop_words = None,   \
-                             max_features = 5000)
+                             stop_words = "english",   \
+                             max_features = 2500, \
+                             min_df = 5, \
+                             max_df = 0.5)
 
 print("Vectorizing data...")
 
-train_data_features = vectorizer.fit_transform(text_collection)
+
+# vect_f = open("nb_vect.pickle", "rb")
+# vectorizer = pickle.load(vect_f)
+# vect_f.close()
+
+
+train_data_features = vectorizer.fit_transform(training_text_collection)
 train_data_features = train_data_features.toarray()
 
-vocab = vectorizer.get_feature_names()
-
+save_vect = open("svm_vect.pickle", "wb")
+pickle.dump(vectorizer, save_vect)
+save_vect.close()
 
 tfidf_transformer = TfidfTransformer()
+
+
+# tfidf_f = open("nb_tfidf.pickle", "rb")
+# tfidf_transformer = pickle.load(tfidf_f)
+# tfidf_f.close()
+
 train_tfidf = tfidf_transformer.fit_transform(train_data_features)
 
+save_tfidf = open("svm_tfidf.pickle", "wb")
+pickle.dump(tfidf_transformer, save_tfidf)
+save_tfidf.close()
 
 training_targets = []
-for text in object_collection:
+for text in training_object_collection:
   gc.disable()
   training_targets.append(text[1])
   gc.enable()
@@ -74,12 +122,20 @@ for text in testing_object_collection:
   testing_targets.append(text[1])
   gc.enable()
 
-
 premidpoint = datetime.datetime.now()
 before_fit = premidpoint - start_of_program
+
 print "Time taken until fit is begun:", before_fit
 
-clf = MultinomialNB().fit(train_tfidf, training_targets)
+# clf_f = open("svm_clf.pickle", "rb")
+# clf = pickle.load(clf_f)
+# clf_f.close()
+
+clf = SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, n_iter=5, random_state=42).fit(train_tfidf, training_targets)
+
+save_clf = open("svm_clf.pickle", "wb")
+pickle.dump(clf, save_clf)
+save_clf.close()
 
 testing_data_features = vectorizer.transform(testing_text_collection)
 new_tfidf = tfidf_transformer.transform(testing_data_features)
@@ -93,10 +149,13 @@ print "Making prediction..."
 predicted = clf.predict(new_tfidf)
 mean = np.mean(predicted == testing_targets)
 print(mean)
-print(type(predicted))
+# print(type(predicted))
+
+print(metrics.confusion_matrix(testing_targets, predicted))
+print(metrics.classification_report(testing_targets, predicted))
 
 end_of_program = datetime.datetime.now()
 print "End of program:", end_of_program
 
 total_time = end_of_program - start_of_program
-print "Runtime:", total_time
+print "Runtime:", datetime.datetime.now() - start_of_program

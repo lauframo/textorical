@@ -77,38 +77,40 @@ testing_text_collection_f.close()
 vectorizer = CountVectorizer(analyzer = "word",   \
                              tokenizer = None,    \
                              preprocessor = None, \
-                             stop_words = None,   \
-                             max_features = 5000)
+                             stop_words = "english",   \
+                             max_features = 2500, \
+                             min_df = 5, \
+                             max_df = 0.4)
 
-# print("Vectorizing data...")
+print("Vectorizing data...")
 
-# train_data_features = vectorizer.fit_transform(training_text_collection)
-# train_data_features = train_data_features.toarray()
+train_data_features = vectorizer.fit_transform(training_text_collection)
+train_data_features = train_data_features.toarray()
 
-# save_vect = open("nb_vect.pickle", "wb")
-# pickle.dump(vectorizer, save_vect)
-# save_vect.close()
+save_vect = open("nb_vect.pickle", "wb")
+pickle.dump(vectorizer, save_vect)
+save_vect.close()
 
-vect_f = open("nb_vect.pickle", "rb")
-vectorizer = pickle.load(vect_f)
-vect_f.close()
+# vect_f = open("nb_vect.pickle", "rb")
+# vectorizer = pickle.load(vect_f)
+# vect_f.close()
 
-# tfidf_transformer = TfidfTransformer()
-# train_tfidf = tfidf_transformer.fit_transform(train_data_features)
+tfidf_transformer = TfidfTransformer()
+train_tfidf = tfidf_transformer.fit_transform(train_data_features)
 
-# save_tfidf = open("nb_tfidf.pickle", "wb")
-# pickle.dump(tfidf_transformer, save_tfidf)
-# save_tfidf.close()
+save_tfidf = open("nb_tfidf.pickle", "wb")
+pickle.dump(tfidf_transformer, save_tfidf)
+save_tfidf.close()
 
-tfidf_f = open("nb_tfidf.pickle", "rb")
-tfidf_transformer = pickle.load(tfidf_f)
-tfidf_f.close()
+# tfidf_f = open("nb_tfidf.pickle", "rb")
+# tfidf_transformer = pickle.load(tfidf_f)
+# tfidf_f.close()
 
-# training_targets = []
-# for text in training_object_collection:
-#   gc.disable()
-#   training_targets.append(text[1])
-#   gc.enable()
+training_targets = []
+for text in training_object_collection:
+  gc.disable()
+  training_targets.append(text[1])
+  gc.enable()
 
 testing_targets = []
 for text in testing_object_collection:
@@ -117,15 +119,15 @@ for text in testing_object_collection:
   gc.enable()
 
 premidpoint = datetime.datetime.now()
-# before_fit = premidpoint - start_of_program
-#
-# print "Time taken until fit is begun:", before_fit
+before_fit = premidpoint - start_of_program
 
-clf_f = open("nb_clf.pickle", "rb")
-clf = pickle.load(clf_f)
-clf_f.close()
+print "Time taken until fit is begun:", before_fit
 
-# clf = MultinomialNB().fit(train_tfidf, training_targets)
+# clf_f = open("nb_clf.pickle", "rb")
+# clf = pickle.load(clf_f)
+# clf_f.close()
+
+clf = MultinomialNB().fit(train_tfidf, training_targets)
 
 # save_clf = open("nb_clf.pickle", "wb")
 # pickle.dump(clf, save_clf)
@@ -134,19 +136,19 @@ clf_f.close()
 testing_data_features = vectorizer.transform(testing_text_collection)
 new_tfidf = tfidf_transformer.transform(testing_data_features)
 
-# midpoint = datetime.datetime.now()
-# before_prediction = midpoint - start_of_program
-# print "Time taken until prediction begun:", before_prediction
+midpoint = datetime.datetime.now()
+before_prediction = midpoint - start_of_program
+print "Time taken until prediction begun:", before_prediction
 
-# print "Making prediction..."
+print "Making prediction..."
 
 predicted = clf.predict(new_tfidf)
 mean = np.mean(predicted == testing_targets)
 print(mean)
-# print(type(predicted))
+print(type(predicted))
 
-# end_of_program = datetime.datetime.now()
-# print "End of program:", end_of_program
+end_of_program = datetime.datetime.now()
+print "End of program:", end_of_program
 
-# total_time = end_of_program - start_of_program
+total_time = end_of_program - start_of_program
 print "Runtime:", datetime.datetime.now() - start_of_program

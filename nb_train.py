@@ -20,33 +20,35 @@ start_of_program = datetime.datetime.now()
 # def get_testing_set(year):
 #   return Text.query.filter_by(period_start_year = year).filter_by(data_set = "test").all()
 print "Grabbing data..."
-# training_collection = Text.query.filter_by(data_set = "train").all()
+training_collection = Text.query.filter(Text.data_set != "test").all()
 # testing_collection = Text.query.filter_by(data_set = "test").all()
 
-# training_object_collection = []
-# training_text_collection = []
+print(len(training_collection))
 
-# for text in training_collection:
-#   gc.disable()
-#   training_object_collection.append([text.id, text.period_start_year])
-#   training_text_collection.append(text.text_content)
-#   gc.enable()
+training_object_collection = []
+training_text_collection = []
 
-# save_training_object_collection = open("training_object_collection.pickle", "wb")
-# pickle.dump(training_object_collection, save_training_object_collection)
-# save_training_object_collection.close()
+for text in training_collection:
+  gc.disable()
+  training_object_collection.append([text.id, text.period_start_year])
+  training_text_collection.append(text.text_content)
+  gc.enable()
 
-# save_training_text_collection = open("training_text_collection.pickle", "wb")
-# pickle.dump(training_text_collection, save_training_text_collection)
-# save_training_text_collection.close()
+save_training_object_collection = open("training_object_collection.pickle", "wb")
+pickle.dump(training_object_collection, save_training_object_collection)
+save_training_object_collection.close()
 
-training_object_collection_f = open("training_object_collection.pickle", "rb")
-training_object_collection = pickle.load(training_object_collection_f)
-training_object_collection_f.close()
+save_training_text_collection = open("training_text_collection.pickle", "wb")
+pickle.dump(training_text_collection, save_training_text_collection)
+save_training_text_collection.close()
 
-training_text_collection_f = open("training_text_collection.pickle", "rb")
-training_text_collection = pickle.load(training_text_collection_f)
-training_text_collection_f.close()
+# training_object_collection_f = open("training_object_collection.pickle", "rb")
+# training_object_collection = pickle.load(training_object_collection_f)
+# training_object_collection_f.close()
+
+# training_text_collection_f = open("training_text_collection.pickle", "rb")
+# training_text_collection = pickle.load(training_text_collection_f)
+# training_text_collection_f.close()
 
 # testing_object_collection = []
 # testing_text_collection = []

@@ -1,4 +1,7 @@
-# dependencies
+##Textorical/CuriousCorpus
+Textorical evolved to become CuriousCorpus. In this repo you can find the pre-serialized models, to see updated code and find out more please go to [CuriousCorpus](https://github.com/npentella/CuriousCorpus)
+
+## dependencies
   * bssdb3
   * autoenv==1.0.0
   * Flask==0.10.0
